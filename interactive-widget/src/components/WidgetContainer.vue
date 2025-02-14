@@ -1,33 +1,53 @@
 <template>
   <div>
-    <!-- Floating Logo Button (Opens the Widget) -->
     <img class="floating-logo" src="/logo1.png" @click="toggleWidget" />
 
-    <!-- Chat Widget (Hidden Until Opened) -->
-    <div v-if="isOpen" class="widget-container" :style="{ backgroundColor: bgColor, fontSize: fontSize + 'px', fontFamily: fontFamily }">
+    <div
+      v-if="isOpen"
+      class="widget-container"
+      :style="{
+        backgroundColor: bgColor,
+        fontSize: fontSize + 'px',
+        fontFamily: fontFamily,
+      }"
+    >
       <div class="widget-header">
         <img :src="logo" alt="logo" class="logo-header" />
         <button class="close-button" @click="toggleWidget">✖</button>
       </div>
 
-      <!-- Step 1: Ask for Problem Description -->
       <div v-if="!problemDescription">
         <span class="text">What problem are you trying to solve?</span>
-        <textarea v-model="userInput" placeholder="Describe your issue..." class="problem-input"></textarea>
-        <button @click="submitProblemDescription" :disabled="!userInput.trim()">Submit</button>
+        <textarea
+          v-model="userInput"
+          placeholder="Describe your issue..."
+          class="problem-input"
+        ></textarea>
+        <button @click="submitProblemDescription" :disabled="!userInput.trim()">
+          Submit
+        </button>
       </div>
 
-      <!-- Step 2: Show One Question at a Time -->
       <div v-else-if="currentQuestion">
         <span class="text question-text">{{ currentQuestion.text }}</span>
 
-        <div v-if="currentQuestion.type === 'text-enum'" class="text-enum-options">
-          <button v-for="option in currentQuestion.options" :key="option" @click="selectAnswer(option)">
+        <div
+          v-if="currentQuestion.type === 'text-enum'"
+          class="text-enum-options"
+        >
+          <button
+            v-for="option in currentQuestion.options"
+            :key="option"
+            @click="selectAnswer(option)"
+          >
             {{ option }}
           </button>
         </div>
 
-        <div v-else-if="currentQuestion.type === 'image-enum'" class="image-options">
+        <div
+          v-else-if="currentQuestion.type === 'image-enum'"
+          class="image-options"
+        >
           <img
             v-for="option in currentQuestion.options"
             :key="option"
@@ -38,17 +58,33 @@
           />
         </div>
 
-        <input v-else-if="currentQuestion.type === 'text'" type="text" v-model="userAnswer" class="responsive-input" />
-        <input v-else-if="currentQuestion.type === 'number'" type="number" v-model="userAnswer" class="responsive-input" />
+        <input
+          v-else-if="currentQuestion.type === 'text'"
+          type="text"
+          v-model="userAnswer"
+          class="responsive-input"
+        />
+        <input
+          v-else-if="currentQuestion.type === 'number'"
+          type="number"
+          v-model="userAnswer"
+          class="responsive-input"
+        />
 
-        <!-- Fixed Submit Button -->
-        <button @click="submitAnswer" :disabled="!userAnswer && !selectedOption">Submit</button>
+        <button
+          @click="submitAnswer"
+          :disabled="!userAnswer && !selectedOption"
+        >
+          Submit
+        </button>
       </div>
 
-      <!-- Answered Questions (Always Visible) -->
-      <AnsweredQuestions v-if="answers.length > 0" :answers="answers" @edit="editAnswer" />
+      <AnsweredQuestions
+        v-if="answers.length > 0"
+        :answers="answers"
+        @edit="editAnswer"
+      />
 
-      <!-- Step 3: Display the Solution -->
       <div v-if="solution">
         <span class="text">Recommended Solution:</span>
         <span class="text">{{ solution }}</span>
@@ -56,10 +92,8 @@
 
       <FeedbackForm v-if="solution" @feedback="handleFeedback" />
 
-      <!-- Edit Button to Show Customization Form -->
       <button class="edit-btn" @click="toggleEdit">Edit</button>
 
-      <!-- Customization Panel -->
       <div v-if="showEdit" class="edit-panel">
         <label class="text">Change Background Color:</label>
         <input type="color" v-model="newBgColor" />
@@ -105,13 +139,13 @@ export default {
     const selectedOption = ref("");
 
     const showEdit = ref(false);
-    const bgColor = ref("#212121"); // Default dark background color
+    const bgColor = ref("#212121");
     const newBgColor = ref("#212121");
 
-    const fontSize = ref(16); // Default font size
+    const fontSize = ref(16);
     const newFontSize = ref(16);
 
-    const fontFamily = ref("Arial, sans-serif"); // Default font family
+    const fontFamily = ref("Arial, sans-serif");
     const newFontFamily = ref("Arial, sans-serif");
 
     function toggleWidget() {
@@ -144,7 +178,10 @@ export default {
       if (!currentQuestions.value.length) return;
 
       const answer = selectedOption.value || userAnswer.value;
-      answers.value.push({ question: currentQuestions.value[currentQuestionIndex.value], answer });
+      answers.value.push({
+        question: currentQuestions.value[currentQuestionIndex.value],
+        answer,
+      });
 
       if (currentQuestionIndex.value < currentQuestions.value.length - 1) {
         currentQuestionIndex.value++;
@@ -158,7 +195,9 @@ export default {
     }
 
     function editAnswer(questionId) {
-      const questionIndex = answers.value.findIndex((a) => a.question.id === questionId);
+      const questionIndex = answers.value.findIndex(
+        (a) => a.question.id === questionId
+      );
       if (questionIndex !== -1) {
         currentQuestionIndex.value = questionIndex;
         answers.value.splice(questionIndex, 1);
@@ -166,41 +205,49 @@ export default {
     }
 
     function generateSolution() {
-      let solutionText = "Based on your responses, here is your recommended solution.";
+      let solutionText =
+        "Based on your responses, here is your recommended solution.";
 
-      const categoryAnswer = answers.value.find((a) => a.question.id === 1)?.answer;
-      const severityAnswer = answers.value.find((a) => a.question.id === 3)?.answer;
+      const categoryAnswer = answers.value.find(
+        (a) => a.question.id === 1
+      )?.answer;
+      const severityAnswer = answers.value.find(
+        (a) => a.question.id === 3
+      )?.answer;
 
       if (categoryAnswer === "Software") {
         solutionText = "Try restarting your software and check for updates.";
       } else if (categoryAnswer === "Hardware") {
-        solutionText = "Check hardware connections and ensure components are properly seated.";
+        solutionText =
+          "Check hardware connections and ensure components are properly seated.";
       } else {
         solutionText = "For further troubleshooting, please contact support.";
       }
 
       if (severityAnswer >= 8) {
-        solutionText += " Since the severity is high, you should seek immediate professional help.";
+        solutionText +=
+          " Since the severity is high, you should seek immediate professional help.";
       }
 
       solution.value = solutionText;
     }
 
     const currentQuestion = computed(() => {
-      return currentQuestionIndex.value !== null ? currentQuestions.value[currentQuestionIndex.value] : null;
+      return currentQuestionIndex.value !== null
+        ? currentQuestions.value[currentQuestionIndex.value]
+        : null;
     });
 
     function handleFeedback(feedback) {
       console.log("User feedback:", feedback);
     }
 
-    // Logo upload handler
     function handleLogoUpload(event) {
       const file = event.target.files[0];
       if (file) {
         const reader = new FileReader();
         reader.onload = () => {
-          logo.value = reader.result; // Set the new logo as the source
+          logo.value = reader.result;
         };
         reader.readAsDataURL(file);
       }
@@ -234,7 +281,7 @@ export default {
       selectedOption,
       handleLogoUpload,
     };
-  }
+  },
 };
 </script>
 
@@ -299,7 +346,8 @@ export default {
   display: block;
 }
 
-.edit-panel input, .edit-panel select {
+.edit-panel input,
+.edit-panel select {
   width: 100%;
   padding: 8px;
   margin-top: 8px;

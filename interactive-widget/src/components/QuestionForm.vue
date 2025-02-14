@@ -4,7 +4,6 @@
     <div v-for="question in questions" :key="question.id">
       <p>{{ question.text }}</p>
 
-      <!-- Text Enumeration -->
       <div v-if="question.type === 'text-enum'">
         <button
           v-for="option in question.options"
@@ -15,7 +14,6 @@
         </button>
       </div>
 
-      <!-- Image Enumeration -->
       <div v-else-if="question.type === 'image-enum'">
         <img
           v-for="option in question.options"
@@ -26,7 +24,6 @@
         />
       </div>
 
-      <!-- Freeform Text Input -->
       <input
         v-else-if="question.type === 'text'"
         type="text"
@@ -34,7 +31,6 @@
         @blur="submitAnswer(question, answers[question.id])"
       />
 
-      <!-- Numeric Input -->
       <input
         v-else-if="question.type === 'number'"
         type="number"
