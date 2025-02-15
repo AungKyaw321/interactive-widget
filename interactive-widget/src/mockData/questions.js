@@ -9,7 +9,7 @@ export default [
     id: 2,
     text: "Upload an image of the issue:",
     type: "image-enum",
-    options: ["/logo1.png", "/logo1.png"],
+    options: ["/logo1.png", "/vite.svg"],
   },
   { id: 3, text: "How severe is the issue?", type: "number" },
   { id: 4, text: "Describe the expected outcome:", type: "text" },
