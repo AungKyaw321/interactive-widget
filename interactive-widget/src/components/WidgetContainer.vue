@@ -1,6 +1,6 @@
 <template>
   <div>
-    <img class="floating-logo" src="/logo1.png" @click="toggleWidget" />
+    <img class="floating-logo" :src="logo" @click="toggleWidget" />
 
     <div
       v-if="isOpen"
@@ -13,7 +13,6 @@
     >
       <div class="widget-header">
         <img :src="logo" alt="logo" class="logo-header" />
-        <button class="close-button" @click="toggleWidget">✖</button>
       </div>
 
       <div v-if="!problemDescription">
@@ -92,8 +91,20 @@
 
       <FeedbackForm v-if="solution" @feedback="handleFeedback" />
 
-      <button class="edit-btn" @click="toggleEdit">Edit</button>
+      <!-- Admin Access -->
+      <button class="edit-btn" @click="togglePasswordPrompt">
+        Admin Access
+      </button>
 
+      <!-- Password Input -->
+      <div v-if="showPasswordPrompt" class="password-panel">
+        <label class="text">Enter Admin Password:</label>
+        <input type="password" v-model="adminPassword" />
+        <button @click="checkPassword">Submit Password</button>
+        <p v-if="passwordError" class="error-text">Incorrect password!</p>
+      </div>
+
+      <!-- Admin Panel -->
       <div v-if="showEdit" class="edit-panel">
         <label class="text">Change Background Color:</label>
         <input type="color" v-model="newBgColor" />
@@ -110,9 +121,10 @@
         </select>
 
         <label class="text">Change Logo:</label>
-        <input type="file" @change="handleLogoUpload" />
+        <input type="file" @change="handleLogoUpload" accept="image/*" />
 
-        <button @click="applyChanges">Apply</button>
+        <button @click="applyChanges">Apply Changes</button>
+        <button class="edit-btn logout-btn" @click="logoutAdmin">Logout</button>
       </div>
     </div>
   </div>
@@ -139,6 +151,11 @@ export default {
     const selectedOption = ref("");
 
     const showEdit = ref(false);
+    const showPasswordPrompt = ref(false);
+    const adminPassword = ref("");
+    const passwordError = ref(false);
+    const correctPassword = "admin123";
+
     const bgColor = ref("#212121");
     const newBgColor = ref("#212121");
 
@@ -152,8 +169,24 @@ export default {
       isOpen.value = !isOpen.value;
     }
 
-    function toggleEdit() {
-      showEdit.value = !showEdit.value;
+    function togglePasswordPrompt() {
+      showPasswordPrompt.value = !showPasswordPrompt.value;
+      passwordError.value = false;
+    }
+
+    function checkPassword() {
+      if (adminPassword.value === correctPassword) {
+        showEdit.value = true;
+        showPasswordPrompt.value = false;
+        adminPassword.value = "";
+      } else {
+        passwordError.value = true;
+        adminPassword.value = "";
+      }
+    }
+
+    function logoutAdmin() {
+      showEdit.value = false;
     }
 
     function applyChanges() {
@@ -255,15 +288,25 @@ export default {
 
     return {
       isOpen,
+      currentQuestion,
+      userAnswer,
+      currentQuestion,
+      selectedOption,
+      solution,
+      handleFeedback,
+      editAnswer,
       toggleWidget,
       logo,
       problemDescription,
       userInput,
       answers,
-      currentQuestions,
-      solution,
       showEdit,
-      toggleEdit,
+      showPasswordPrompt,
+      adminPassword,
+      passwordError,
+      togglePasswordPrompt,
+      checkPassword,
+      logoutAdmin,
       applyChanges,
       bgColor,
       newBgColor,
@@ -274,11 +317,7 @@ export default {
       submitProblemDescription,
       selectAnswer,
       submitAnswer,
-      editAnswer,
-      handleFeedback,
-      currentQuestion,
-      userAnswer,
-      selectedOption,
+      generateSolution,
       handleLogoUpload,
     };
   },
@@ -322,7 +361,7 @@ export default {
 /* Header */
 .widget-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end; /* Align logo to the right */
   align-items: center;
   background: var(--primary-color);
   padding: 10px;
