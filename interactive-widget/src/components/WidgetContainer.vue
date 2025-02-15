@@ -155,6 +155,8 @@ export default {
     const adminPassword = ref("");
     const passwordError = ref(false);
     const correctPassword = "admin123";
+    const isEditing = ref(false); // ✅ Track if user is in edit mode
+    const editingQuestionId = ref(null); // ✅ Stores ID of the question being edited
 
     const bgColor = ref("#212121");
     const newBgColor = ref("#212121");
@@ -211,30 +213,52 @@ export default {
       if (!currentQuestions.value.length) return;
 
       const answer = selectedOption.value || userAnswer.value;
-      answers.value.push({
-        question: currentQuestions.value[currentQuestionIndex.value],
-        answer,
-      });
 
-      if (currentQuestionIndex.value < currentQuestions.value.length - 1) {
-        currentQuestionIndex.value++;
-      } else {
-        currentQuestionIndex.value = null;
-        generateSolution();
+      if (answer) {
+        if (isEditing.value && editingQuestionId.value !== null) {
+          // ✅ Editing mode: update the existing answer
+          const index = answers.value.findIndex(
+            (a) => a.question.id === editingQuestionId.value
+          );
+          if (index !== -1) {
+            answers.value[index].answer = answer; // Update the answer
+          }
+
+          // ✅ Reset editing mode and stop question flow
+          isEditing.value = false;
+          editingQuestionId.value = null;
+          currentQuestionIndex.value = null;
+          generateSolution(); // ✅ Recalculate the solution immediately
+        } else {
+          // ✅ Normal answering flow
+          answers.value.push({
+            question: currentQuestions.value[currentQuestionIndex.value],
+            answer,
+          });
+
+          if (currentQuestionIndex.value < currentQuestions.value.length - 1) {
+            currentQuestionIndex.value++; // Move to next question
+          } else {
+            currentQuestionIndex.value = null; // End question flow
+            generateSolution(); // ✅ Always reevaluate the solution
+          }
+        }
       }
 
+      // Reset inputs
       userAnswer.value = "";
       selectedOption.value = "";
     }
 
     function editAnswer(questionId) {
-      const questionIndex = answers.value.findIndex(
-        (a) => a.question.id === questionId
+      // ✅ Enable edit mode and isolate the specific question
+      isEditing.value = true;
+      editingQuestionId.value = questionId;
+
+      // ✅ Set the current question to the one being edited
+      currentQuestionIndex.value = currentQuestions.value.findIndex(
+        (q) => q.id === questionId
       );
-      if (questionIndex !== -1) {
-        currentQuestionIndex.value = questionIndex;
-        answers.value.splice(questionIndex, 1);
-      }
     }
 
     function generateSolution() {
@@ -294,6 +318,8 @@ export default {
       selectedOption,
       solution,
       handleFeedback,
+      editingQuestionId,
+      isEditing,
       editAnswer,
       toggleWidget,
       logo,
