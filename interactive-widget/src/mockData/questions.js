@@ -7,7 +7,7 @@ export default [
   },
   {
     id: 2,
-    text: "Upload an image of the issue:",
+    text: "Choose an image that best describes your issue:",
     type: "image-enum",
     options: ["/logo1.png", "/vite.svg"],
   },
