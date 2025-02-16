@@ -12,6 +12,7 @@
       }"
     >
       <div class="widget-header">
+        <img :src="secondaryLogo" alt="logo" class="widget-title" />
         <span class="widget-title"></span>
         <!-- ✅ Title on the left -->
         <img :src="logo" alt="logo" class="logo-header" />
@@ -167,6 +168,7 @@ export default {
   setup() {
     const isOpen = ref(false);
     const logo = ref("/logo2.png");
+    const secondaryLogo = ref("/vite.svg");
     const answers = ref([]);
     const currentQuestions = ref([...questionsData]);
     const problemDescription = ref("");
@@ -184,7 +186,7 @@ export default {
     const isEditing = ref(false); // ✅ Track if user is in edit mode
     const editingQuestionId = ref(null); // ✅ Stores ID of the question being edited
 
-    const bgColor = ref("#212121");
+    const bgColor = ref("#022B3A");
     const newBgColor = ref("#212121");
 
     const fontSize = ref(16);
@@ -338,6 +340,7 @@ export default {
 
     return {
       isOpen,
+      secondaryLogo,
       currentQuestion,
       userAnswer,
       currentQuestion,
@@ -379,9 +382,9 @@ export default {
 <style>
 /* Dark Theme */
 :root {
-  --bg-color: #212121;
+  --bg-color: #022b3a;
   --text-color: #ffffff;
-  --primary-color: #424242;
+  --primary-color: #1f7a8c;
   --secondary-color: #333333;
 }
 
@@ -431,9 +434,7 @@ export default {
 }
 /* Header Title */
 .widget-title {
-  font-size: 2rem; /* ✅ Adjust size for readability */
-  font-weight: bold;
-  color: var(--text-color);
+  width: 48px;
 }
 
 /* Smaller Header Logo */
@@ -553,18 +554,15 @@ export default {
 
 .text-question-text {
   display: block;
-  font-size: 1rem;
   color: var(--text-color);
   margin-bottom: 12px; /* ✅ Added spacing below the question */
 }
 
 .answer-container {
-  width: 100%;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 8px 10px; /* ✅ Adds even padding around inputs */
-  box-sizing: border-box;
+  flex-direction: column; /* Stack elements */
+  align-items: flex-start; /* Align to the left */
+  width: 100%; /* Ensure it takes full width */
 }
 
 /* Wider Input Box (Like 2nd Image) */
@@ -591,32 +589,31 @@ export default {
 }
 
 .wide-textarea {
-  width: 90%; /* Ensures it expands almost fully */
+  width: 95%;
   height: 120px;
-  padding: 10px; /* Keeps consistent padding */
-  border-radius: 6px;
+  padding: 12px;
+  border-radius: 8px;
   border: 1px solid #555;
   background: var(--secondary-color);
   color: white;
   resize: none;
-  box-sizing: border-box; /* Ensures padding doesn’t affect width */
-  text-align: left; /* Aligns text to the left */
+  box-sizing: border-box;
 }
 
 .wide-answer-button:hover {
   background: var(--secondary-color);
 }
 
-/* Submit Button Below Input */
 .submit-btn {
-  width: 30%;
-  padding: 10px;
-  margin-top: 10px;
-  border-radius: 6px;
+  width: 20%; /* Same width as the textarea */
+  padding: 12px;
+  margin-top: 10px; /* Space between input and button */
+  border-radius: 8px;
   background: var(--primary-color);
   color: white;
   border: none;
   cursor: pointer;
+  text-align: center;
 }
 
 .submit-btn:hover {
