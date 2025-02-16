@@ -551,12 +551,19 @@ export default {
   background: var(--secondary-color);
 }
 
+.text-question-text {
+  display: block;
+  font-size: 1rem;
+  color: var(--text-color);
+  margin-bottom: 12px; /* ✅ Added spacing below the question */
+}
+
 .answer-container {
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0 10px; /* Adds even padding on both sides */
+  padding: 8px 10px; /* ✅ Adds even padding around inputs */
   box-sizing: border-box;
 }
 
@@ -585,7 +592,7 @@ export default {
 
 .wide-textarea {
   width: 90%; /* Ensures it expands almost fully */
-  height: 60px;
+  height: 120px;
   padding: 10px; /* Keeps consistent padding */
   border-radius: 6px;
   border: 1px solid #555;
